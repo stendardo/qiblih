@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<org.stendardo.bsak.qiblih.views.RawFileView
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:stendardo="http://schemas.android.com/apk/res/org.stendardo.bsak.qiblih"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent"
+  stendardo:filename="license"
+  android:scrollbars = "vertical" 
+  android:maxLines="1000">
+</org.stendardo.bsak.qiblih.views.RawFileView>

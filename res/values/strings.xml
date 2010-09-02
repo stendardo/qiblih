@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Bahai Qiblih Locator</string>
+    <string name="bearing">Bearing:</string>
+    <string name="distance">Approx. Distance (km):</string>
+    <string name="cmd_preferences">Preferences</string>
+    <string name="cmd_close">Close</string>
+    <string name="cmd_readme">Readme</string>
+    <string name="cmd_license">License</string>
+    <string name="prefs_rhumb_line">Use Rhumb Line</string>
+    <string name="prefs_rhumb_line_summary">Use Rhumb Line (line of constant bearing) instead of Great Circle (shortest path) as straight line.</string>
+    <string name="using_great_circle">Using Great Circle as straight line</string>
+    <string name="using_rhumb_line">Using Rhumb Line as straight line</string>
+</resources>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<declare-styleable name="CompassAttributes">
+	
+		<attr name="compassImage" format="integer"/>
+		<attr name="compassArrow" format="integer"/>
+		<attr name="compassGlassPane" format="integer"/>
+	</declare-styleable>
+	<declare-styleable name="RawFileViewAttributes">
+		<attr name="filename" format="string" />
+	</declare-styleable>
+</resources>

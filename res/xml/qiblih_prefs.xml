@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+  xmlns:android="http://schemas.android.com/apk/res/android">
+<CheckBoxPreference android:summary="@string/prefs_rhumb_line_summary" android:title="@string/prefs_rhumb_line" android:key="COMPASS_UseRhumbLine" />
+</PreferenceScreen>
