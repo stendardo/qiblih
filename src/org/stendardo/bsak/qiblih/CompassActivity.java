@@ -8,7 +8,9 @@ import org.stendardo.util.math.GreatCircleCalculator;
 import org.stendardo.util.math.RhumbLineCalculator;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.hardware.GeomagneticField;
@@ -26,6 +28,7 @@ import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 //Bahji: 32.943333,35.092222
 abstract public class CompassActivity extends Activity{
@@ -33,6 +36,7 @@ abstract public class CompassActivity extends Activity{
 	private static final int CLOSE_ID = 1;
 	private static final int README_ID = 2;
 	private static final int LICENSE_ID = 3;
+	private boolean hasErrors = false;
 	private LocationManager locationManager;
 	private SensorManager sensorManager;
 	
@@ -51,9 +55,36 @@ abstract public class CompassActivity extends Activity{
 			}
 		}
 	};
+	private void errorBox(String str)
+	{
+		if (hasErrors)
+		{
+			return;
+		}
+		hasErrors = true;
+		AlertDialog.Builder alertbox = new AlertDialog.Builder(this);
+		 
+        // set the message to display
+        alertbox.setMessage(str);
+
+        // add a neutral button to the alert box and assign a click listener
+        alertbox.setNeutralButton("Ok", new DialogInterface.OnClickListener() {
+
+            // click listener on the alert box
+            public void onClick(DialogInterface arg0, int arg1) {
+                finish();
+            }
+        });
+        alertbox.show();
+	}
 	private void update()
 	{
 		Location l = getCurrentPosition();
+		if (l == null)
+		{
+			errorBox(getResources().getString(R.string.error_no_gps));
+			return;
+		}
 		Location l2 = getLocation();
 		GeomagneticField gmf = new GeomagneticField((float)l.getLatitude(),(float)l.getLongitude(), (float)l.getAltitude(), System.currentTimeMillis());
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
@@ -129,11 +160,18 @@ abstract public class CompassActivity extends Activity{
     protected void onResume()
     {
 		super.onResume();
-		for (String s:locationManager.getProviders(true))
+		try
 		{
-			locationManager.requestLocationUpdates(s,16000, 5, locationListener);
+			for (String s:locationManager.getProviders(true))
+			{
+				locationManager.requestLocationUpdates(s,16000, 5, locationListener);
+			}
+			sensorManager.registerListener(orientationSensorListener,orientationSensor, SensorManager.SENSOR_DELAY_GAME);
+		} catch (Exception e)
+		{
+			errorBox(getResources().getString(R.string.error_no_gps));
 		}
-		sensorManager.registerListener(orientationSensorListener,orientationSensor, SensorManager.SENSOR_DELAY_GAME);
+		
     }
     
     @Override
@@ -146,8 +184,14 @@ abstract public class CompassActivity extends Activity{
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-		locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+		try
+		{
+			locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+		}
+		catch (Exception e)
+		{
+			errorBox(getResources().getString(R.string.error_no_gps));
+		}
 	    sensorManager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);;
 	    
 	    

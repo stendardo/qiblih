@@ -11,4 +11,5 @@
     <string name="prefs_rhumb_line_summary">Use Rhumb Line (line of constant bearing) instead of Great Circle (shortest path) as straight line.</string>
     <string name="using_great_circle">Using Great Circle as straight line</string>
     <string name="using_rhumb_line">Using Rhumb Line as straight line</string>
+    <string name="error_no_gps">Cannot use GPS. Check and see if you have a GPS antenna in the phone, and check your security settings.</string>
 </resources>
