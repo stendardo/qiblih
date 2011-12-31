@@ -21,7 +21,7 @@ public class PointLocatorView extends SurfaceView implements SurfaceHolder.Callb
 	private BitmapDrawable markers;
 	private double azimuth = 0.0;
 	private double currentOrientation = 0.0;
-	private Paint paint = new Paint();//Paint.FILTER_BITMAP_FLAG|Paint.ANTI_ALIAS_FLAG);
+	private Paint paint = new Paint();
 	public void init(AttributeSet as)
 	{
 		Resources res = this.getContext().getResources();
@@ -68,9 +68,12 @@ public class PointLocatorView extends SurfaceView implements SurfaceHolder.Callb
      */
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-    	int width = measureWidthHeight(widthMeasureSpec);
+    	super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    	int side = Math.min(getMeasuredWidth(),getMeasuredHeight());
+    	setMeasuredDimension(side, side);
+    	/*int width = measureWidthHeight(widthMeasureSpec);
     	int height = measureWidthHeight(heightMeasureSpec);
-        setMeasuredDimension(width,height);
+        setMeasuredDimension(width,height);*/
     }
 
     /**
@@ -101,6 +104,7 @@ public class PointLocatorView extends SurfaceView implements SurfaceHolder.Callb
     }
 	public void drawCompass(SurfaceHolder h,double angle) {
 		Canvas canvas = h.lockCanvas(null);
+		
 		Matrix s = new Matrix();
 		s.postScale((float)getWidth()/compass.getBitmap().getWidth(), (float)getWidth()/compass.getBitmap().getWidth());
 		Matrix m = new Matrix(s);
@@ -137,6 +141,9 @@ public class PointLocatorView extends SurfaceView implements SurfaceHolder.Callb
 			}
 		}
 		
+	}
+	public Thread getRendererThread() {
+		return rendererThread;
 	}
 	
 }

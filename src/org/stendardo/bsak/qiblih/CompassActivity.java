@@ -1,5 +1,6 @@
 package org.stendardo.bsak.qiblih;
 
+import java.lang.reflect.Method;
 import java.util.List;
 
 import org.stendardo.bsak.qiblih.views.PointLocatorView;
@@ -25,10 +26,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
+import android.util.Log;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.WindowManager;
 import android.widget.TextView;
-import android.widget.Toast;
 
 //Bahji: 32.943333,35.092222
 abstract public class CompassActivity extends Activity{
@@ -39,7 +42,7 @@ abstract public class CompassActivity extends Activity{
 	private boolean hasErrors = false;
 	private LocationManager locationManager;
 	private SensorManager sensorManager;
-	
+	private Method display_getRotation;
 	private Sensor orientationSensor;
 	private GeoAngleCalculator rhumbLineCalculator = new RhumbLineCalculator();
 	private GeoAngleCalculator greatCircleCalculator = new GreatCircleCalculator();
@@ -55,6 +58,28 @@ abstract public class CompassActivity extends Activity{
 			}
 		}
 	};
+	private double getDisplayRotation()
+	{
+		try
+		{
+			Object o = display_getRotation.invoke(((WindowManager) this.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay());
+			int symbolicRotation = (Integer)o;
+			int res = 90*symbolicRotation;
+			if (res >=180)
+			{
+				res -= 360;
+			}
+			return res;
+		}
+		catch (NullPointerException e)
+		{
+			return 0;
+		}
+		catch (Exception e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
 	private void errorBox(String str)
 	{
 		if (hasErrors)
@@ -82,11 +107,11 @@ abstract public class CompassActivity extends Activity{
 		Location l = getCurrentPosition();
 		if (l == null)
 		{
-			errorBox(getResources().getString(R.string.error_no_gps));
 			return;
 		}
 		Location l2 = getLocation();
 		GeomagneticField gmf = new GeomagneticField((float)l.getLatitude(),(float)l.getLongitude(), (float)l.getAltitude(), System.currentTimeMillis());
+		Log.i("declination",Float.toString(gmf.getDeclination()));
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
 		boolean rhumbLine =  sp.getBoolean("COMPASS_UseRhumbLine", false);
 		GeoAngleCalculator bearingCalculator = rhumbLine?rhumbLineCalculator:greatCircleCalculator;
@@ -97,7 +122,7 @@ abstract public class CompassActivity extends Activity{
 		TextView metricView = (TextView)findViewById(R.id.metric_used);
 		bearing_view.setText(getResources().getString(R.string.bearing)+" "+Math.round(azimuth));
 		metricView.setText(rhumbLine?getResources().getString(R.string.using_rhumb_line):getResources().getString(R.string.using_great_circle));
-		getView().setCurrentOrientation((currentOrientation - gmf.getDeclination()+360)%360);
+		getView().setCurrentOrientation((currentOrientation + getDisplayRotation() - gmf.getDeclination()+360)%360);
 		distance_view.setText(getResources().getString(R.string.distance)+" "+Math.round(bearingCalculator.calculateDistance(l.getLatitude(), l.getLongitude(), l2.getLatitude(), l2.getLongitude())));
 	}
 	private SensorEventListener orientationSensorListener = new SensorEventListener() {
@@ -156,10 +181,19 @@ abstract public class CompassActivity extends Activity{
 		return res;
 	}
 
+	
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		System.gc();
+	}
 	@Override
     protected void onResume()
     {
+		System.gc();
 		super.onResume();
+		
 		try
 		{
 			for (String s:locationManager.getProviders(true))
@@ -178,12 +212,21 @@ abstract public class CompassActivity extends Activity{
     protected void onStop()
     {
         locationManager.removeUpdates(locationListener);
+        sensorManager.unregisterListener(orientationSensorListener);
         super.onStop();
     }
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		try
+		{
+			display_getRotation = Display.class.getMethod("getRotation", new Class[] { } );
+		}
+		catch (NoSuchMethodException ignore)
+		{
+			throw new RuntimeException(ignore);
+		}
 		try
 		{
 			locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);

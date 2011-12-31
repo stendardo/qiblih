@@ -14,11 +14,11 @@
    height="600"
    id="svg2"
    version="1.1"
-   inkscape:version="0.47pre4 r22446"
+   inkscape:version="0.48.2 r9819"
    sodipodi:docname="drawing.svg"
-   inkscape:export-filename="/home/nabil/Workspace/Bahai Qiblih Locator/res/drawable/bahai_arrow.png"
-   inkscape:export-xdpi="90"
-   inkscape:export-ydpi="90">
+   inkscape:export-filename="/home/nabil/git/qiblih/res/drawable/bahai_arrow.png"
+   inkscape:export-xdpi="72"
+   inkscape:export-ydpi="72">
   <defs
      id="defs4">
     <linearGradient
@@ -152,18 +152,18 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.385"
-     inkscape:cx="259.87622"
+     inkscape:cx="59.87622"
      inkscape:cy="270.98277"
      inkscape:document-units="px"
-     inkscape:current-layer="layer3"
+     inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:snap-global="true"
      showguides="true"
      inkscape:guide-bbox="true"
-     inkscape:window-width="1920"
-     inkscape:window-height="1084"
-     inkscape:window-x="0"
-     inkscape:window-y="25"
+     inkscape:window-width="2560"
+     inkscape:window-height="1385"
+     inkscape:window-x="-2"
+     inkscape:window-y="-3"
      inkscape:window-maximized="1">
     <inkscape:grid
        type="xygrid"
@@ -208,7 +208,8 @@
        d="m 309.61372,795.26379 31,-22.28789 -19.20636,-163.22536 -20.79364,-83.9489 -19.42516,84.61823 -20.57484,162.55603 31,22.95721 18,-0.66932 z"
        id="path3679-4"
        sodipodi:nodetypes="cccccccc"
-       inkscape:transform-center-y="-124" />
+       inkscape:transform-center-y="-124"
+       inkscape:connector-curvature="0" />
     <path
        sodipodi:type="arc"
        style="fill:#c87137"
@@ -238,7 +239,8 @@
     <path
        style="fill:#cccccc;stroke:#000000;stroke-width:5;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline"
        d="m 299.28125,70.5 c -128.95582,0 -233.5,102.75065 -233.5,229.5 0,126.74935 104.54418,229.5 233.5,229.5 128.95582,0 233.5,-102.75065 233.5,-229.5 0,-126.74935 -104.54418,-229.5 -233.5,-229.5 z M 300,108.3125 c 107.71195,0 195.03125,85.81853 195.03125,191.6875 0,105.86897 -87.3193,191.6875 -195.03125,191.6875 -107.71195,0 -195.03125,-85.81853 -195.03125,-191.6875 0,-105.86897 87.3193,-191.6875 195.03125,-191.6875 z"
-       id="path2843-5-8" />
+       id="path2843-5-8"
+       inkscape:connector-curvature="0" />
     <text
        xml:space="preserve"
        style="font-size:40px;font-style:normal;font-weight:normal;fill:#ff0000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
@@ -286,7 +288,8 @@
        id="path3813"
        style="fill:none;stroke:#000000;stroke-width:0.99773693px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        d="M 0.49886848,0.49887251 599.50114,599.50114 m -0.34489,-599.34489 -599,599 0.6875,0.6875 599,-599 -0.6875,-0.6875 z"
-       clip-path="url(#clipPath4007)" />
+       clip-path="url(#clipPath4007)"
+       inkscape:connector-curvature="0" />
   </g>
   <g
      inkscape:groupmode="layer"
@@ -298,7 +301,8 @@
        d="M 307.71995,347.71033 337,313.42995 317.8362,166.92161 300,116.57324 283.33764,167.49574 263,313.42995 l 29.28005,34.85451 15.4399,-0.57413 z"
        id="path3679"
        sodipodi:nodetypes="cccccccc"
-       inkscape:transform-center-y="-106.36373" />
+       inkscape:transform-center-y="-106.36373"
+       inkscape:connector-curvature="0" />
     <path
        sodipodi:type="star"
        style="fill:#000000;fill-opacity:1;stroke:#ff2d2d;stroke-width:4;stroke-miterlimit:20;stroke-opacity:1;stroke-dasharray:none"
@@ -313,7 +317,7 @@
        inkscape:flatsided="false"
        inkscape:rounded="0"
        inkscape:randomized="0"
-       d="m 299.99999,329.99999 -5.38343,-16.03427 -14.21671,9.16319 6.18268,-15.74336 -16.78062,-2.11891 14.85584,-8.08597 -11.49268,-12.40955 16.57779,3.35494 -0.8272,-16.89363 10.54281,13.22604 10.22535,-13.47298 -0.42528,16.90852 16.49334,-3.74818 -11.19437,12.67932 15.04391,7.73044 -16.72549,2.51732 6.55528,15.5919 -14.43057,-8.82256 -5.00065,16.15774 z"
+       d="m 299.99999,329.99999 -5.38343,-16.03427 -14.21671,9.16319 6.18268,-15.74336 -16.78062,-2.11891 14.85584,-8.08597 -11.49268,-12.40955 16.57779,3.35494 -0.8272,-16.89363 10.54281,13.22604 10.22535,-13.47298 -0.42528,16.90852 16.49334,-3.74818 -11.19437,12.67932 15.04391,7.73044 -16.72549,2.51732 6.55528,15.5919 -14.43057,-8.82256 z"
        transform="matrix(0.92721125,0,0,0.98280927,21.836636,3.67295)" />
   </g>
 </svg>

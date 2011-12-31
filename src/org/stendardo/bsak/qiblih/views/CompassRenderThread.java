@@ -11,6 +11,7 @@ public class CompassRenderThread extends Thread{
 	public CompassRenderThread(PointLocatorView view) {
 		this.view = view;
 		this.holder = view.getHolder();
+		
 	}
 
 	@Override
@@ -33,7 +34,7 @@ public class CompassRenderThread extends Thread{
 			//double currentAngle = view.getAzimuth();
 			double currentAngle = (view.getAzimuth() - view.getCurrentOrientation()+720)%360;
 			double shortestAngle = (currentAngle - previousAngle+360)%360;
-			if (shortestAngle > 180)
+			while (shortestAngle > 180)
 			{
 				shortestAngle -= 360;
 			}
