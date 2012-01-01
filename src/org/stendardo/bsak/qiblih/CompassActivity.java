@@ -122,7 +122,7 @@ abstract public class CompassActivity extends Activity{
 		TextView metricView = (TextView)findViewById(R.id.metric_used);
 		bearing_view.setText(getResources().getString(R.string.bearing)+" "+Math.round(azimuth));
 		metricView.setText(rhumbLine?getResources().getString(R.string.using_rhumb_line):getResources().getString(R.string.using_great_circle));
-		getView().setCurrentOrientation((currentOrientation + getDisplayRotation() - gmf.getDeclination()+360)%360);
+		getView().setCurrentOrientation((currentOrientation + getDisplayRotation() + gmf.getDeclination()+360)%360);
 		distance_view.setText(getResources().getString(R.string.distance)+" "+Math.round(bearingCalculator.calculateDistance(l.getLatitude(), l.getLongitude(), l2.getLatitude(), l2.getLongitude())));
 	}
 	private SensorEventListener orientationSensorListener = new SensorEventListener() {
