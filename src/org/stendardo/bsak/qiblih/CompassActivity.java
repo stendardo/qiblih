@@ -43,10 +43,13 @@ abstract public class CompassActivity extends Activity{
 	private LocationManager locationManager;
 	private SensorManager sensorManager;
 	private Method display_getRotation;
-	private Sensor orientationSensor;
+	private Sensor gravitySensor;
+	private Sensor geomagneticSensor;
 	private GeoAngleCalculator rhumbLineCalculator = new RhumbLineCalculator();
 	private GeoAngleCalculator greatCircleCalculator = new GreatCircleCalculator();
 	private float currentOrientation = 0;
+	private float[] currentUnbufferedAngles = new float[11];
+	
 	private static final int REFRESH = 0; 
 	private Handler updater = new Handler(){
 		@Override
@@ -111,7 +114,6 @@ abstract public class CompassActivity extends Activity{
 		}
 		Location l2 = getLocation();
 		GeomagneticField gmf = new GeomagneticField((float)l.getLatitude(),(float)l.getLongitude(), (float)l.getAltitude(), System.currentTimeMillis());
-		Log.i("declination",Float.toString(gmf.getDeclination()));
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
 		boolean rhumbLine =  sp.getBoolean("COMPASS_UseRhumbLine", false);
 		GeoAngleCalculator bearingCalculator = rhumbLine?rhumbLineCalculator:greatCircleCalculator;
@@ -127,11 +129,44 @@ abstract public class CompassActivity extends Activity{
 	}
 	private SensorEventListener orientationSensorListener = new SensorEventListener() {
 		
+		float[] mGravity;
+		float[] mGeomagnetic;
+		float[] R = new float[9];
+		float[] I = new float[9];
+		float orientation[] = new float[3];
+		
+		
 		@Override
 		public void onSensorChanged(SensorEvent event) {
+			if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER)
+			{
+				mGravity = event.values;
+			}
+			else if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD)
+			{
+				mGeomagnetic = event.values;
+			}
+			if (mGravity != null && mGeomagnetic != null) {
+				boolean success = SensorManager.getRotationMatrix(R, I, mGravity, mGeomagnetic);
+				if (success)
+				{
+					SensorManager.getOrientation(R, orientation);
+					float currentUnbufferedAngle = orientation[0];
+					float x = (float)Math.cos(currentUnbufferedAngle);
+					float y = (float)Math.sin(currentUnbufferedAngle);
+					for (int i = currentUnbufferedAngles.length-1; i > 0 ; i--)
+					{
+						x += Math.cos(currentUnbufferedAngles[i-1]);
+						y += Math.sin(currentUnbufferedAngles[i-1]);
+						currentUnbufferedAngles[i] = currentUnbufferedAngles[i-1];
+					}
+					currentUnbufferedAngles[0] = currentUnbufferedAngle;
+					currentOrientation = (float)((180.0/Math.PI)*Math.atan2(y, x));
+					updater.sendEmptyMessage(REFRESH);
+				}
+			}
 			
-			currentOrientation = event.values[0];
-			updater.sendEmptyMessage(REFRESH);
+			
 		}
 		
 		@Override
@@ -186,12 +221,13 @@ abstract public class CompassActivity extends Activity{
 	@Override
 	protected void onPause() {
 		super.onPause();
-		System.gc();
+		locationManager.removeUpdates(locationListener);
+        sensorManager.unregisterListener(orientationSensorListener);
+        ((PointLocatorView)findViewById(R.id.point_locator_view)).onPause();
 	}
 	@Override
     protected void onResume()
     {
-		System.gc();
 		super.onResume();
 		
 		try
@@ -200,21 +236,16 @@ abstract public class CompassActivity extends Activity{
 			{
 				locationManager.requestLocationUpdates(s,16000, 5, locationListener);
 			}
-			sensorManager.registerListener(orientationSensorListener,orientationSensor, SensorManager.SENSOR_DELAY_GAME);
+			sensorManager.registerListener(orientationSensorListener,geomagneticSensor, SensorManager.SENSOR_DELAY_GAME);
+			sensorManager.registerListener(orientationSensorListener,gravitySensor, SensorManager.SENSOR_DELAY_GAME);
 		} catch (Exception e)
 		{
 			errorBox(getResources().getString(R.string.error_no_gps));
 		}
+		((PointLocatorView)findViewById(R.id.point_locator_view)).onResume();
 		
     }
     
-    @Override
-    protected void onStop()
-    {
-        locationManager.removeUpdates(locationListener);
-        sensorManager.unregisterListener(orientationSensorListener);
-        super.onStop();
-    }
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -238,18 +269,18 @@ abstract public class CompassActivity extends Activity{
 	    sensorManager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);;
 	    
 	    
-	    List<Sensor> temp = sensorManager.getSensorList(Sensor.TYPE_ORIENTATION);
-	    if (!temp.isEmpty())
-	    {
-	    	orientationSensor = temp.get(0);
-	    }
+	    //List<Sensor> temp = sensorManager.getSensorList(Sensor.TYPE_ORIENTATION);
+	    //if (!temp.isEmpty())
+	    //{
+	    gravitySensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+	    geomagneticSensor = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+	    
+	    //}
 	}
 	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         menu.add(Menu.NONE, EDIT_ID, Menu.NONE, getResources().getString(R.string.cmd_preferences))
                 .setAlphabeticShortcut('p');
-        menu.add(Menu.NONE, CLOSE_ID, Menu.NONE, getResources().getString(R.string.cmd_close))
-                        .setAlphabeticShortcut('c');
         menu.add(Menu.NONE, README_ID, Menu.NONE, getResources().getString(R.string.cmd_readme)).setAlphabeticShortcut('r');
         menu.add(Menu.NONE, LICENSE_ID, Menu.NONE, getResources().getString(R.string.cmd_license)).setAlphabeticShortcut('l');
         return(super.onCreateOptionsMenu(menu));
@@ -261,9 +292,6 @@ abstract public class CompassActivity extends Activity{
         switch (item.getItemId()) {
         		case EDIT_ID:
                 	startActivity(new Intent(this, QiblihPreferences.class));
-                	return true;
-                case CLOSE_ID:
-                	finish();
                 	return true;
                 case README_ID:
                 	startActivity(new Intent(this, ReadmeActivity.class));

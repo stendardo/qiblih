@@ -1,13 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:stendardo="http://schemas.android.com/apk/res/org.stendardo.bsak.qiblih"
-  android:layout_width="fill_parent"
-  android:layout_height="fill_parent"
-  android:orientation="vertical">
-  <org.stendardo.bsak.qiblih.views.PointLocatorView android:id="@+id/point_locator_view"
-     android:layout_width="wrap_content"
-     android:layout_height="wrap_content"/>
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:orientation="vertical"
+  android:background="@android:color/black">
+  <LinearLayout 
+      android:layout_width="match_parent"
+      android:layout_height="0dp"
+      android:layout_weight="1"
+      android:orientation="vertical"
+      android:gravity="top"
+      >
+	  <org.stendardo.bsak.qiblih.views.PointLocatorView android:id="@+id/point_locator_view"
+	     android:layout_width="match_parent"
+	     android:layout_height="match_parent"/>
+  </LinearLayout>
   <TextView android:id="@+id/bearing_view" android:layout_width="fill_parent" android:layout_height="24dp" android:text="Bearing"/>
   <TextView android:id="@+id/distance_view" android:layout_width="fill_parent" android:layout_height="24dp" android:text="Distance"/>
   <TextView android:id="@+id/metric_used" android:layout_width="fill_parent" android:layout_height="24dp" android:text="@string/using_great_circle"/>

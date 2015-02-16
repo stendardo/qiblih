@@ -9,18 +9,20 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Display;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.WindowManager;
 
 public class PointLocatorView extends SurfaceView implements SurfaceHolder.Callback{
-	private Thread rendererThread;
+	private CompassRenderThread rendererThread;
 	private BitmapDrawable compass;
 	private BitmapDrawable arrow;
 	private BitmapDrawable markers;
 	private double azimuth = 0.0;
 	private double currentOrientation = 0.0;
+	private boolean hasSurface = false;
 	private Paint paint = new Paint();
 	public void init(AttributeSet as)
 	{
@@ -63,25 +65,20 @@ public class PointLocatorView extends SurfaceView implements SurfaceHolder.Callb
 	public synchronized void setCurrentOrientation(double currentOrientation) {
 		this.currentOrientation = currentOrientation;
 	}
-	/**
-     * @see android.view.View#measure(int, int)
-     */
+	/*
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
     	super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     	int side = Math.min(getMeasuredWidth(),getMeasuredHeight());
     	setMeasuredDimension(side, side);
-    	/*int width = measureWidthHeight(widthMeasureSpec);
-    	int height = measureWidthHeight(heightMeasureSpec);
-        setMeasuredDimension(width,height);*/
+    	//int width = measureWidthHeight(widthMeasureSpec);
+    	//int height = measureWidthHeight(heightMeasureSpec);
+        //setMeasuredDimension(width,height);
     }
 
-    /**
-     * Determines the width of this view
-     * @param measureSpec A measureSpec packed into an int
-     * @return The width of the view, honoring constraints from measureSpec
-     */
-    private int measureWidthHeight(int measureSpec) {
+
+    @SuppressWarnings("deprecation")
+	private int measureWidthHeight(int measureSpec) {
         int result = 0;
         int specMode = MeasureSpec.getMode(measureSpec);
         int specSize = MeasureSpec.getSize(measureSpec);
@@ -102,8 +99,35 @@ public class PointLocatorView extends SurfaceView implements SurfaceHolder.Callb
 
         return result;
     }
+    */
+	
+	@Override
+	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+	    super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+	 
+	    int size = 0;
+	    int width = getMeasuredWidth();
+	    int height = getMeasuredHeight();
+	    int widthWithoutPadding = width - getPaddingLeft() - getPaddingRight();
+	    int heigthWithoutPadding = height - getPaddingTop() - getPaddingBottom();
+	 
+	    // set the dimensions
+	    if (widthWithoutPadding > heigthWithoutPadding) {
+	        size = heigthWithoutPadding;
+	    } else {
+	        size = widthWithoutPadding;
+	    }
+	 
+	    setMeasuredDimension(size + getPaddingLeft() + getPaddingRight(), size + getPaddingTop() + getPaddingBottom());
+	}
+	
 	public void drawCompass(SurfaceHolder h,double angle) {
-		Canvas canvas = h.lockCanvas(null);
+		if (!hasSurface)
+		{
+			return;
+		}
+		
+		Canvas canvas = h.lockCanvas();
 		
 		Matrix s = new Matrix();
 		s.postScale((float)getWidth()/compass.getBitmap().getWidth(), (float)getWidth()/compass.getBitmap().getWidth());
@@ -121,29 +145,39 @@ public class PointLocatorView extends SurfaceView implements SurfaceHolder.Callb
 			int height) {
 		
 	}
-	@Override
-	public void surfaceCreated(SurfaceHolder holder) {
-		
+	
+	public void onPause()
+	{
+		rendererThread.interrupt();
+		try
+		{
+			rendererThread.join();
+		}
+		catch (InterruptedException e)
+		{
+			
+		}
+	}
+	
+	public void onResume()
+	{
 		rendererThread = new CompassRenderThread(this);
 		rendererThread.start();
+		rendererThread.startRendering();
+	}
+	
+	@Override
+	public void surfaceCreated(SurfaceHolder holder) {
+		hasSurface = true;
+		
+		
 	}
 	@Override
 	public void surfaceDestroyed(SurfaceHolder holder) {
-		if (rendererThread != null)
-		{
-			rendererThread.interrupt();
-			try
-			{
-				rendererThread.join();
-			}
-			catch(InterruptedException e)
-			{
-			}
-		}
 		
-	}
-	public Thread getRendererThread() {
-		return rendererThread;
+		hasSurface = false;
+		
+		
 	}
 	
 }
